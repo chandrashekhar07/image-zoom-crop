@@ -3,88 +3,54 @@ import "./App.css";
 
 import Cropper from "react-easy-crop";
 import Slider from "@material-ui/core/Slider";
-import Button from "@material-ui/core/Button";
-
-import { generateDownload } from "./utils/cropImage";
 
 export default function App() {
-	const inputRef = React.useRef();
+  const [crop, setCrop] = React.useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = React.useState(1);
 
-	const triggerFileSelectPopup = () => inputRef.current.click();
+  const customStyle = {
+    containerStyle: {
+      width: "70%",
+      height: "100%",
+      
+    },
+    mediaStyle: {
+      left: "-50%",
+    },
+    cropAreaStyle: {
+      "background-image":
+        "url('https://mhs-dev-public.s3.amazonaws.com/static/assets/image/grid-center.png'), url('https://mhs-dev-public.s3.amazonaws.com/static/assets/image/Grid-green.png')",
+      "background-size": "100% 100%",
+      "background-repeat": "no-repeat",
+      "left": "20%",
+    },
+  };
 
-	const [image, setImage] = React.useState(null);
-	const [croppedArea, setCroppedArea] = React.useState(null);
-	const [crop, setCrop] = React.useState({ x: 0, y: 0 });
-	const [zoom, setZoom] = React.useState(1);
-
-	const onCropComplete = (croppedAreaPercentage, croppedAreaPixels) => {
-		setCroppedArea(croppedAreaPixels);
-	};
-
-	const onSelectFile = (event) => {
-		if (event.target.files && event.target.files.length > 0) {
-			const reader = new FileReader();
-			reader.readAsDataURL(event.target.files[0]);
-			reader.addEventListener("load", () => {
-				setImage(reader.result);
-			});
-		}
-	};
-
-	const onDownload = () => {
-		generateDownload(image, croppedArea);
-	};
-
-	return (
-		<div className='container'>
-			<div className='container-cropper'>
-				{image ? (
-					<>
-						<div className='cropper'>
-							<Cropper
-								image={image}
-								crop={crop}
-								zoom={zoom}
-								aspect={1}
-								onCropChange={setCrop}
-								onZoomChange={setZoom}
-								onCropComplete={onCropComplete}
-							/>
-						</div>
-
-						<div className='slider'>
-							<Slider
-								min={1}
-								max={3}
-								step={0.1}
-								value={zoom}
-								onChange={(e, zoom) => setZoom(zoom)}
-							/>
-						</div>
-					</>
-				) : null}
-			</div>
-
-			<div className='container-buttons'>
-				<input
-					type='file'
-					accept='image/*'
-					ref={inputRef}
-					onChange={onSelectFile}
-					style={{ display: "none" }}
-				/>
-				<Button
-					variant='contained'
-					color='primary'
-					onClick={triggerFileSelectPopup}
-					style={{ marginRight: "10px" }}
-				>
-					Choose
-				</Button>
-				<Button variant='contained' color='secondary' onClick={onDownload}>
-					Download
-				</Button>
-			</div>
-		</div>
-	);
+  return (
+    <div className="outer-container">
+      <div className="cropper">
+        <Cropper
+          image={
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/1200px-Image_created_with_a_mobile_phone.png"
+          }
+          crop={crop}
+          zoom={zoom}
+          aspect={46 / 100}
+          onCropChange={setCrop}
+          onZoomChange={setZoom}
+          showGrid={false}
+          style={customStyle}
+        />
+      </div>
+      <div className="slider">
+        <Slider
+          min={1}
+          max={10}
+          step={0.1}
+          value={zoom}
+          onChange={(e, zoom) => setZoom(zoom)}
+        />
+      </div>
+    </div>
+  );
 }
